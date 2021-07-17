@@ -1,4 +1,4 @@
-from flask import Flask, request, Response, jsonify, send_from_directory, abort
+from flask import Flask, request, Response, jsonify, json, send_from_directory, abort
 import os
 from keras.models import load_model
 import os
@@ -18,8 +18,8 @@ from PIL import Image
 
 classifier = load_model('equipment_detector.h5')
 
-stored_dict = {'[0]': 'bench', '[1]': 'dumbbell', '[2]': 'leg-extension', '[3]': 'leg-press'}
-stored_dict_n = {'[0]': 'bench', '[1]': 'dumbbell', '[2]': 'leg-extension', '[3]': 'leg-press'}
+stored_dict = {0: 'bench', 1: 'dumbbell', 2: 'leg-extension', 3: 'leg-press'}
+stored_dict_n = {0: 'bench', 1: 'dumbbell', 2: 'leg-extension', 3: 'leg-press'}
 #gpu_devices = tf.config.experimental.list_physical_devices('GPU')
 #for device in gpu_devices:
    #tf.config.experimental.set_memory_growth(device, True)
@@ -31,8 +31,8 @@ app = Flask(__name__)
 #API that returns image with detections on it
 @app.route('/image', methods= ['POST'])
 def get_image():
-    
-    image_data = request.json["image"]
+
+    image_data = request.json['image']
     image_data = bytes(image_data, encoding="ascii")
     im = Image.open(BytesIO(base64.b64decode(image_data)))
     im.save('image.jpg')
@@ -45,11 +45,22 @@ def get_image():
 
     result = classifier.predict(img, 1, verbose=0)
 
-    class_predicted = np.argmax(result, axis=1)
+    class_predicted = np.argmax(result[0])
+    print("RESULT==============================")
+    print(class_predicted)
+    
+    response = stored_dict[class_predicted]
+    print("response")
+    print(response)
 
-    os.remove(im)
+    if result[0][class_predicted] <= 0.5:
+	    response = 'no hay coincidencias'
+
+    #index_predict = np.argmax(pred[0])
+    print("class=", json.dumps(stored_dict[class_predicted]))
+    os.remove('image.jpg')
     try:
-        return Response(response=class_predicted, status=200, mimetype='image/png')
+        return Response(response=json.dumps(response), status=200, mimetype='application/json')
     except FileNotFoundError:
         abort(404)
 
