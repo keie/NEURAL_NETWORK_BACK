@@ -35,9 +35,9 @@ def get_image():
     image_data = request.json["image"]
     image_data = bytes(image_data, encoding="ascii")
     im = Image.open(BytesIO(base64.b64decode(image_data)))
-    im.save('image22.jpg')
+    im.save('image.jpg')
 
-    image_path = 'image22.jpg'
+    image_path = 'image.jpg'
     img = image.load_img(image_path, target_size=(256,256))
     img = image.img_to_array(img)
     img = img/255 #convert to grayscale
