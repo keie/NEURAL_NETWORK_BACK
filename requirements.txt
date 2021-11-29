@@ -1,9 +1,4 @@
 
 flask
-os
 keras.preprocessing
-keras.applications.vgg16
-os.path 
-io
-PIL
-flask_cors
+keras.applications
