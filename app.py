@@ -64,6 +64,12 @@ def get_image():
     except FileNotFoundError:
         abort(404)
 
+@app.route('/test', methods= ['GET'])
+def test():
+    try:
+        return Response(response=json.dumps("works!!"), status=200, mimetype='application/json')
+    except FileNotFoundError:
+        abort(404)
 
 if __name__ == '__main__':
     app.run(debug=True)
