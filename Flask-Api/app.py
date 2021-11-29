@@ -14,12 +14,12 @@ import tensorflow as tf
 import base64
 from io import BytesIO
 from PIL import Image
-
+from flask_cors import CORS
 
 classifier = load_model('equipment_detector.h5')
 
-stored_dict = {0: 'bench', 1: 'dumbbell', 2: 'leg-extension', 3: 'leg-press'}
-stored_dict_n = {0: 'bench', 1: 'dumbbell', 2: 'leg-extension', 3: 'leg-press'}
+stored_dict = {0: '1_bench', 1: '2_dumbbell', 2: '4_leg-extension', 3: '3_leg-press'}
+stored_dict_n = {0: '1_bench', 1: '2_dumbbell', 2: '4_leg-extension', 3: '3_leg-press'}
 #gpu_devices = tf.config.experimental.list_physical_devices('GPU')
 #for device in gpu_devices:
    #tf.config.experimental.set_memory_growth(device, True)
@@ -27,7 +27,7 @@ config =  tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True
 session = tf.compat.v1.Session(config=config)
 app = Flask(__name__)
-
+CORS(app)
 #API that returns image with detections on it
 @app.route('/image', methods= ['POST'])
 def get_image():
@@ -53,8 +53,8 @@ def get_image():
     print("response")
     print(response)
 
-    if result[0][class_predicted] <= 0.5:
-	    response = 'no hay coincidencias'
+    #if result[0][class_predicted] <= 0.5:
+	#    response = 'no hay coincidencias'
 
     #index_predict = np.argmax(pred[0])
     print("class=", json.dumps(stored_dict[class_predicted]))
